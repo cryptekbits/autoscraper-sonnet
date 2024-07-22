@@ -17,7 +17,7 @@ from autoscraper.utils import (
     unique_hashable,
     unique_stack_list,
 )
-
+from autoscraper.llm_integration import analyze_content_with_llm
 
 class AutoScraper(object):
     """
@@ -41,6 +41,7 @@ class AutoScraper(object):
     load() - De-serializes the JSON representation of the stack_list and loads it back.
     remove_rules() - Removes one or more learned rule[s] from the stack_list.
     keep_rules() - Keeps only the specified learned rules in the stack_list and removes the others.
+    recursive_parse() - Recursively parses a webpage and its subpages up to a specified depth.
     """
 
     request_headers = {
@@ -721,3 +722,58 @@ class AutoScraper(object):
     def generate_python_code(self):
         # deprecated
         print("This function is deprecated. Please use save() and load() instead.")
+
+    def recursive_parse(self, url, depth, output_file='knowledge_graph.md'):
+        """
+        Recursively parses a webpage and its subpages up to a specified depth.
+
+        Parameters:
+        ----------
+        url : str
+            The URL of the webpage to start parsing from.
+        depth : int
+            The maximum depth of recursion.
+        output_file : str, optional
+            The name of the output markdown file (default is 'knowledge_graph.md').
+
+        Returns:
+        --------
+        None
+        """
+        visited = set()
+        with open(output_file, 'w') as f:
+            self._recursive_parse_helper(url, depth, 1, '', visited, f)
+
+    def _recursive_parse_helper(self, url, max_depth, current_depth, prefix, visited, file):
+        if current_depth > max_depth or url in visited:
+            return
+
+        visited.add(url)
+        print(f"Parsing {url} at depth {current_depth}")
+
+        try:
+            response = requests.get(url, headers=self.request_headers)
+            soup = BeautifulSoup(response.text, 'html.parser')
+
+            # Extract main content (you might need to adjust this based on the website structure)
+            main_content = soup.find('main') or soup.find('body')
+            
+            # Analyze content with LLM
+            important_topics = analyze_content_with_llm(main_content.get_text())
+
+            # Write to file
+            file.write(f"{prefix}{current_depth}. {soup.title.string if soup.title else url}\n\n")
+            for topic in important_topics:
+                file.write(f"{prefix}  - {topic}\n")
+            file.write("\n")
+
+            # Find links
+            links = main_content.find_all('a', href=True)
+            for i, link in enumerate(links, start=1):
+                next_url = urljoin(url, link['href'])
+                if next_url.startswith(('http://', 'https://')):
+                    self._recursive_parse_helper(next_url, max_depth, current_depth + 1, 
+                                                 f"{prefix}{current_depth}.", visited, file)
+
+        except Exception as e:
+            print(f"Error parsing {url}: {str(e)}")
