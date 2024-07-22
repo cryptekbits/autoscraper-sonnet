@@ -1,9 +1,9 @@
-# AutoScraper: A Smart, Automatic, Fast and Lightweight Web Scraper for Python
+# AutoScraper: A Smart, Automatic, Fast and Lightweight Web Scraper for Python with LLM Integration
 
 ![img](https://user-images.githubusercontent.com/17881612/91968083-5ee92080-ed29-11ea-82ec-d99ec85367a5.png)
 
-This project is made for automatic web scraping to make scraping easy. 
-It gets a url or the html content of a web page and a list of sample data which we want to scrape from that page. **This data can be text, url or any html tag value of that page.** It learns the scraping rules and returns the similar elements. Then you can use this learned object with new urls to get similar content or the exact same element of those new pages.
+This project is made for automatic web scraping to make scraping easy and intelligent. 
+It gets a url or the html content of a web page and a list of sample data which we want to scrape from that page. **This data can be text, url or any html tag value of that page.** It learns the scraping rules and returns the similar elements. Then you can use this learned object with new urls to get similar content or the exact same element of those new pages. With the new LLM integration, it can now provide more advanced analysis and understanding of the scraped content.
 
 
 ## Installation
@@ -137,6 +137,33 @@ scraper.load('yahoo-finance')
 
 - See [this gist](https://gist.github.com/alirezamika/72083221891eecd991bbc0a2a2467673) for more advanced usages.
 - [AutoScraper and Flask: Create an API From Any Website in Less Than 5 Minutes](https://medium.com/better-programming/autoscraper-and-flask-create-an-api-from-any-website-in-less-than-5-minutes-3f0f176fc4a3)
+
+## LLM Integration
+
+AutoScraper now includes LLM (Large Language Model) integration for advanced content analysis. This new feature allows for:
+
+- Intelligent interpretation of scraped data
+- Automatic categorization and summarization of content
+- Enhanced understanding of context and relationships within the scraped information
+
+To use the LLM integration:
+
+```python
+from autoscraper import AutoScraper
+from autoscraper.llm_integration import analyze_content_with_llm
+
+url = 'https://example.com'
+wanted_list = ["sample data"]
+
+scraper = AutoScraper()
+result = scraper.build(url, wanted_list)
+
+# Analyze the scraped content with LLM
+analyzed_content = analyze_content_with_llm(result, url)
+print(analyzed_content)
+```
+
+This integration opens up new possibilities for more sophisticated web scraping and data analysis tasks.
 
 ## Issues
 Feel free to open an issue if you have any problem using the module.
