@@ -742,9 +742,9 @@ class AutoScraper(object):
         """
         visited = set()
         with open(output_file, 'w') as f:
-            self._recursive_parse_helper(url, depth, 1, '', visited, f)
+            self._recursive_parse_helper(url, depth, 1, visited, f)
 
-    def _recursive_parse_helper(self, url, max_depth, current_depth, prefix, visited, file):
+    def _recursive_parse_helper(self, url, max_depth, current_depth, visited, file):
         if current_depth > max_depth or url in visited:
             return
 
@@ -758,22 +758,20 @@ class AutoScraper(object):
             # Extract main content (you might need to adjust this based on the website structure)
             main_content = soup.find('main') or soup.find('body')
             
-            # Analyze content with LLM
-            important_topics = analyze_content_with_llm(main_content.get_text())
+            # Analyze content with LLM and get formatted Markdown
+            markdown_content = analyze_content_with_llm(main_content.get_text(), url)
 
             # Write to file
-            file.write(f"{prefix}{current_depth}. {soup.title.string if soup.title else url}\n\n")
-            for topic in important_topics:
-                file.write(f"{prefix}  - {topic}\n")
-            file.write("\n")
+            file.write(f"\n\n{'#' * current_depth} {url}\n\n")
+            file.write(markdown_content)
+            file.write("\n\n")
 
             # Find links
             links = main_content.find_all('a', href=True)
-            for i, link in enumerate(links, start=1):
+            for link in links:
                 next_url = urljoin(url, link['href'])
                 if next_url.startswith(('http://', 'https://')):
-                    self._recursive_parse_helper(next_url, max_depth, current_depth + 1, 
-                                                 f"{prefix}{current_depth}.", visited, file)
+                    self._recursive_parse_helper(next_url, max_depth, current_depth + 1, visited, file)
 
         except Exception as e:
             print(f"Error parsing {url}: {str(e)}")
