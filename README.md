@@ -138,13 +138,14 @@ scraper.load('yahoo-finance')
 - See [this gist](https://gist.github.com/alirezamika/72083221891eecd991bbc0a2a2467673) for more advanced usages.
 - [AutoScraper and Flask: Create an API From Any Website in Less Than 5 Minutes](https://medium.com/better-programming/autoscraper-and-flask-create-an-api-from-any-website-in-less-than-5-minutes-3f0f176fc4a3)
 
-## LLM Integration
+## LLM Integration with Claude Sonnet-3.5
 
-AutoScraper now includes LLM (Large Language Model) integration for advanced content analysis. This new feature allows for:
+AutoScraper now includes LLM (Large Language Model) integration using Anthropic's Claude Sonnet-3.5 model for advanced content analysis. This powerful feature enables:
 
-- Intelligent interpretation of scraped data
-- Automatic categorization and summarization of content
-- Enhanced understanding of context and relationships within the scraped information
+- Intelligent interpretation and summarization of scraped data
+- Automatic extraction of key concepts and important information
+- Enhanced understanding of context and relationships within the scraped content
+- Generation of well-structured Markdown summaries
 
 To use the LLM integration:
 
@@ -158,12 +159,20 @@ wanted_list = ["sample data"]
 scraper = AutoScraper()
 result = scraper.build(url, wanted_list)
 
-# Analyze the scraped content with LLM
+# Analyze the scraped content with Claude Sonnet-3.5
 analyzed_content = analyze_content_with_llm(result, url)
 print(analyzed_content)
 ```
 
-This integration opens up new possibilities for more sophisticated web scraping and data analysis tasks.
+This integration opens up new possibilities for sophisticated web scraping, content analysis, and knowledge extraction tasks. The Claude Sonnet-3.5 model provides high-quality, context-aware summaries and insights from the scraped data.
+
+Note: To use this feature, you need to set up your Anthropic API key as an environment variable:
+
+```bash
+export ANTHROPIC_API_KEY=your_api_key_here
+```
+
+Make sure to keep your API key secure and never share it publicly.
 
 ## Issues
 Feel free to open an issue if you have any problem using the module.
